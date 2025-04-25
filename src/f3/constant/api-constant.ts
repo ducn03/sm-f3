@@ -4,7 +4,7 @@ import { env } from '$lib/config/env'
 export const API_CONSTANT = {
     AUTHENTICATION: {
         HEADER: {
-            NAME: {
+            KEY: {
                 Authorization: 'Authorization',
                 ContentType: 'Content-Type',
             },
@@ -15,8 +15,9 @@ export const API_CONSTANT = {
         }
     },
     COOKIE: {
-        NAME: {
-            Token: 'userinfo'
+        KEY: {
+            Token: 'userinfo',
+            RefreshToken: 'refresh-token'
         },
         cookieMaxAge: {
             // 1 giờ (tính bằng giây)
@@ -25,13 +26,13 @@ export const API_CONSTANT = {
             longTerm: 30 * 24 * 60 * 60
         }
     },
-    ERROR: {
-        CODE: {
-            SystemError: 500,
-            NotFound: 404,
-            Forbidden: 403,
-            Unauthorized: 401
-        }
+    STATUS: {
+        OK: 200,
+        SystemError: 500,
+        NotFound: 404,
+        Forbidden: 403,
+        Unauthorized: 401,
+
     },
     REQUEST: {
         // 30 giây

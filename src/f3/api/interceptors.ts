@@ -8,14 +8,14 @@ apiClient.interceptors.request.use((config) => {
 
   // Bước 1: Thiết lập headers mặc định
   if (config.headers) {
-    config.headers[API_CONSTANT.AUTHENTICATION.HEADER.NAME.ContentType] = API_CONSTANT.AUTHENTICATION.HEADER.VALUE.ApplicationJson;
+    config.headers[API_CONSTANT.AUTHENTICATION.HEADER.KEY.ContentType] = API_CONSTANT.AUTHENTICATION.HEADER.VALUE.ApplicationJson;
   }
   
   // Phương thức 1: Sử dụng cookie để lấy token
-  const tokenFromCookie = cookieService.get(API_CONSTANT.COOKIE.NAME.Token);
+  const tokenFromCookie = cookieService.get(API_CONSTANT.COOKIE.KEY.Token);
   
   // Phương thức 2: Sử dụng localStorage để lấy token
-  // const tokenFromStorage = localStorage.getItem(API_CONSTANT.COOKIE.NAME.Token);
+  // const tokenFromStorage = localStorage.getItem(API_CONSTANT.COOKIE.KEY.Token);
   
   // Phương thức 3: Sử dụng auth store (đã comment)
   // const user = get(authStore);
@@ -27,7 +27,7 @@ apiClient.interceptors.request.use((config) => {
     // Nếu dùng BE JWT
     // config.headers.Authorization = `${API_CONSTANT.authentication.header.prefix.Bearer}${token}`;
     // Nếu BE dùng Redis only thì
-    config.headers[API_CONSTANT.AUTHENTICATION.HEADER.NAME.Authorization] = token;
+    config.headers[API_CONSTANT.AUTHENTICATION.HEADER.KEY.Authorization] = token;
   }
   
   return config;
@@ -43,11 +43,11 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     // Xử lý lỗi 401 - Unauthorized
-    if (error.response?.status === API_CONSTANT.ERROR.CODE.Unauthorized) {
+    if (error.response?.status === API_CONSTANT.STATUS.Unauthorized) {
       console.warn('Unauthorized - cần đăng nhập lại');
       
       // Xóa token khỏi cả cookie và localStorage
-      cookieService.remove(API_CONSTANT.COOKIE.NAME.Token);
+      cookieService.remove(API_CONSTANT.COOKIE.KEY.Token);
       // localStorage.removeItem(API_CONSTANT.authentication.tokenName);
       
       // Chuyển hướng đến trang đăng nhập hoặc reset authStore nếu cần
@@ -56,11 +56,11 @@ apiClient.interceptors.response.use(
     }
     
     // Xử lý các mã lỗi khác tại đây
-    if (error.response?.status === API_CONSTANT.ERROR.CODE.Forbidden) {
+    if (error.response?.status === API_CONSTANT.STATUS.Forbidden) {
       console.warn('Forbidden - không có quyền truy cập');
     }
     
-    if (error.response?.status === API_CONSTANT.ERROR.CODE.SystemError) {
+    if (error.response?.status === API_CONSTANT.STATUS.SystemError) {
       console.error('Server error - lỗi máy chủ');
     }
     

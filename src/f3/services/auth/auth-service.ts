@@ -4,16 +4,17 @@ import { ENDPOINTS } from '$f3/routes/endpoints';
 import { API_CONSTANT } from '$f3/constant/api-constant';
 // SERVICE
 import { cookieService } from '$lib/services/storage/browser-cookie';
+import { authStore } from '$f3/services/auth/stores/auth-store';
 // HELPER
 import { cryptoHelper } from '$lib/helper/crypto-helper';
 // INTERFACE
 import type { CookieOptions } from '$lib/services/storage/interface/cookie-options';
 import type { UserInfo } from '$lib/interface/user-info';
-import type { LoginResponse } from '$f3/services/auth/interface/login-response';
 import type { LoginCredentials } from '$f3/services/auth/interface/login-credentials';
 // import { authStore } from '$presentation/stores/auth-store';
 
-const tokenName = API_CONSTANT.COOKIE.NAME.Token;
+const tokenName = API_CONSTANT.COOKIE.KEY.Token;
+const refreshToken = API_CONSTANT.COOKIE.KEY.RefreshToken;
 
 /**
  * Dịch vụ xử lý các thao tác liên quan đến xác thực
@@ -35,7 +36,7 @@ export class AuthService {
       );
       
       //B2: Xử lý kết quả sau khi gọi API đăng nhập
-      
+
       if (!response || response.token) {
         console.log("Không có token trả về")
         return response;
@@ -49,6 +50,10 @@ export class AuthService {
       };
       
       cookieService.set(tokenName, cryptoHelper.encryptObject(response), cookieOptions);
+      if (response.refreshToken != null){
+        cookieService.set(refreshToken, cryptoHelper.encrypt(response?.refreshToken));
+      }
+      authStore.setAuth(response.token, response);
         
       return response;
   }
@@ -65,6 +70,7 @@ export class AuthService {
     }
 
     cookieService.remove(tokenName);
+    authStore.clearAuth();
     // window.location.href = '/login';
   }
   
