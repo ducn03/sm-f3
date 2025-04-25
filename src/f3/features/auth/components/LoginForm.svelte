@@ -93,7 +93,7 @@
     <!-- Submit -->
     <Button type="submit" color="purple" class="w-full py-2.5" disabled={isLoading}>
       {#if isLoading}
-        <Spinner class="mr-2 w-4 h-4" /> Đang xử lý...
+        <Spinner class="mr-2 w-4 h-4" />Chờ tôi xíu nhé! 🥹🥹🥹
       {:else}
         {submitLabel}
       {/if}

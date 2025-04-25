@@ -1,7 +1,9 @@
 // API
 import { apiHelper, apiClient } from '$f3/api/api-client';
+// CONSTANT
 import { ENDPOINTS } from '$f3/routes/endpoints';
 import { API_CONSTANT } from '$f3/constant/api-constant';
+import { ROUTE_CONSTANT } from '$f3/constant/route-constant';
 // SERVICE
 import { cookieService } from '$lib/services/storage/browser-cookie';
 import { authStore } from '$f3/services/auth/stores/auth-store';
@@ -44,7 +46,7 @@ export class AuthService {
 
       // Luôn lưu vào cookie cho phiên hiện tại
       const cookieOptions : CookieOptions = {
-        path: '/',
+        path: ROUTE_CONSTANT.default,
         secure: window.location.protocol === 'http:',
         sameSite: 'Lax' as const
       };
@@ -71,7 +73,7 @@ export class AuthService {
 
     cookieService.remove(tokenName);
     authStore.clearAuth();
-    // window.location.href = '/login';
+    window.location.href = ROUTE_CONSTANT.login;
   }
   
   /**
