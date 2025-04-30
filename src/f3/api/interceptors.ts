@@ -1,6 +1,7 @@
-import { apiClient } from './api-client';
+import { apiClient } from '../../lib/api/api-client';
 import { API_CONSTANT } from '$f3/constant/api-constant';
 import { cookieService } from '$lib/services/storage/browser-cookie';
+import { logger } from '$lib/services/logger';
 
 
 // Mỗi request được gửi lên sẽ qua cái này
@@ -38,7 +39,7 @@ apiClient.interceptors.response.use(
   (response) => {
     
     // Nếu có logic thì xử lý thêm
-
+    logger.debug(response);
     return response;
   },
   (error) => {

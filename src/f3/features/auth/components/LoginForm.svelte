@@ -4,6 +4,9 @@
   import FloatingLabelInput from '$f3/presentation/components/ui/FloatingLabelInput.svelte';
   import { UI_CONSTANT } from '$f3/constant/ui-constant'
   import { MESSAGE_CONSTANT } from '$f3/constant/message-constant';
+  import { login } from '$f3/services/auth/auth-service';
+  import type { LoginCredentials } from '$f3/services/auth/interface/login-credentials';
+  import { logger } from '$lib/services/logger';
 
   const dispatch = createEventDispatcher();
 
@@ -17,11 +20,12 @@
   export let submitLabel = 'Đăng nhập';
   export let redirectLabel = 'Chưa có tài khoản?';
   export let redirectUrl = '/register';
+  export let successRedirectUrl = '/dashboard';
   let usernameRequiredError = MESSAGE_CONSTANT.AUTH.usernameRequiredError;
   let passwordRequiredError = MESSAGE_CONSTANT.AUTH.passwordRequiredError;
   export let logo: null | typeof import('svelte').SvelteComponent = null;
 
-  function handleSubmit() {
+  async function handleSubmit() {
     // Các input sẽ nhận biết được khi người dùng submit
     window.dispatchEvent(new CustomEvent(UI_CONSTANT.form));
 
@@ -32,18 +36,29 @@
 
     errorMessage = '';
     isLoading = true;
-    dispatch('submit', { username, password, rememberMe });
-  }
+    
+    try {
+      const response = await login({ username, password, rememberMe });
 
-  export function setError(msg: string) {
-    errorMessage = msg;
-  }
-
-  export function setLoading(loading: boolean) {
-    isLoading = loading;
+      if (response && response.data.token) {
+        // Thông báo đăng nhập thành công cho trang gốc
+        dispatch('login-success', { 
+          userInfo: response.data, 
+          redirectUrl: successRedirectUrl 
+        });
+      } else {
+        errorMessage = response.meta.message;
+      }
+    } catch (error) {
+      logger.error(error);
+      errorMessage = 'Lỗi kết nối. Vui lòng thử lại.';
+    } finally {
+      isLoading = false;
+    }
   }
 
   function handleSocialLogin(provider: string) {
+    isLoading = true;
     dispatch('social-login', { provider });
   }
 </script>
@@ -70,6 +85,7 @@
       label="Tên đăng nhập"
       required
       requiredError={usernameRequiredError}
+      focusColor="primary"
     />
 
     <!-- Password -->
@@ -83,6 +99,7 @@
       label="Mật khẩu"
       required
       requiredError={passwordRequiredError}
+      focusColor="primary"
     />
 
     <!-- Forgot password -->
@@ -91,7 +108,7 @@
     </div>
 
     <!-- Submit -->
-    <Button type="submit" color="purple" class="w-full py-2.5" disabled={isLoading}>
+    <Button type="submit" color="primary" class="w-full py-2.5" disabled={isLoading}>
       {#if isLoading}
         <Spinner class="mr-2 w-4 h-4" />Chờ tôi xíu nhé! 🥹🥹🥹
       {:else}

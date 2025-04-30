@@ -3,7 +3,9 @@ import axios, { type AxiosInstance } from 'axios';
 // Tạo và trả về một instance Axios với cấu hình cơ bản
 export const createInstance = (): AxiosInstance => {
   // const instance = axios.create();
-  return axios.create();
+  return axios.create({
+    withCredentials: false
+  });
 };
 
 // Instance API mặc định để sử dụng trong ứng dụng

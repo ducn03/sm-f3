@@ -2,16 +2,21 @@
     import Header from './Header.svelte';
     import Footer from './Footer.svelte';
     import { uiStore } from '$f3/presentation/stores/ui-store';
+    import '../../../../app.css';
     
     // Props
+    // svelte-ignore export_let_unused
     export let pageName = ''; // For page-specific styling or logic
     export let hideFooter = false; // Option to hide footer on specific pages
     
     // Menu items for header
-    const menuItems = [
-      { label: 'Dashboard', href: '/' },
-      { label: 'Profile', href: '/profile' },
-      { label: 'Settings', href: '/settings' }
+   // Menu items for header - now with icon property
+   const menuItems = [
+      // { label: 'Home', href: '/', icon: 'home' },
+      { label: '', href: '/explore', icon: 'compass' },
+      { label: '', href: '/messages', icon: 'message-circle' },
+      { label: '', href: '/notifications', icon: 'bell' },
+      { label: '', href: '/bookmarks', icon: 'bookmark' }
     ];
     
     // Footer links
