@@ -5,7 +5,6 @@
   import { UI_CONSTANT } from '$f3/constant/ui-constant'
   import { MESSAGE_CONSTANT } from '$f3/constant/message-constant';
   import { login } from '$f3/services/auth/auth-service';
-  import type { LoginCredentials } from '$f3/services/auth/interface/login-credentials';
   import { logger } from '$lib/services/logger';
 
   const dispatch = createEventDispatcher();
@@ -23,6 +22,7 @@
   export let successRedirectUrl = '/dashboard';
   let usernameRequiredError = MESSAGE_CONSTANT.AUTH.usernameRequiredError;
   let passwordRequiredError = MESSAGE_CONSTANT.AUTH.passwordRequiredError;
+  let requiredError = MESSAGE_CONSTANT.FORM.required;
   export let logo: null | typeof import('svelte').SvelteComponent = null;
 
   async function handleSubmit() {
@@ -30,7 +30,7 @@
     window.dispatchEvent(new CustomEvent(UI_CONSTANT.form));
 
     if (!username || !password) {
-      errorMessage = 'Vui lòng điền đầy đủ thông tin';
+      errorMessage = requiredError;
       return;
     }
 
@@ -50,8 +50,11 @@
         errorMessage = response.meta.message;
       }
     } catch (error) {
-      logger.error(error);
-      errorMessage = 'Lỗi kết nối. Vui lòng thử lại.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = MESSAGE_CONSTANT.SYSTEM.error;
+      }
     } finally {
       isLoading = false;
     }
@@ -86,6 +89,7 @@
       required
       requiredError={usernameRequiredError}
       focusColor="primary"
+      successColor="primary"
     />
 
     <!-- Password -->
@@ -93,6 +97,7 @@
       style="outlined"
       id="password"
       type="password"
+      autocomplete="current-password"
       bind:value={password}
       disabled={isLoading}
       class="w-full"
@@ -100,6 +105,7 @@
       required
       requiredError={passwordRequiredError}
       focusColor="primary"
+      successColor="primary"
     />
 
     <!-- Forgot password -->

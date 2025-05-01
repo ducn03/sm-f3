@@ -1,5 +1,5 @@
 // API
-import { apiHelper, apiClient } from '$lib/api/api-client';
+import { apiClient, apiHelper } from '$f3/api/api-client';
 // CONSTANT
 import { ENDPOINTS } from '$f3/routes/endpoints';
 import { API_CONSTANT } from '$f3/constant/api-constant';
@@ -13,7 +13,7 @@ import { cryptoHelper } from '$lib/helper/crypto-helper';
 import type { CookieOptions } from '$lib/services/storage/interface/cookie-options';
 import type { UserInfo } from '$lib/interface/user-info';
 import type { LoginCredentials } from '$f3/services/auth/interface/login-credentials';
-import type { ApiResponse } from '$lib/api/api-response';
+import type { ApiResponse } from '$f3/api/api-response';
 import { logger } from '$lib/services/logger';
 import { AppThrower } from '$lib/utils/errors';
 // import { authStore } from '$presentation/stores/auth-store';
@@ -35,15 +35,13 @@ export class AuthService {
       
       // B1: Gọi API đăng nhập
       const response = await apiHelper.post<ApiResponse<UserInfo>>(
-        apiClient,
         ENDPOINTS.login, 
         { username, password }
       );
       
       //B2: Xử lý kết quả sau khi gọi API đăng nhập
-      logger.info(response);
       if (response.meta.returnCode != API_CONSTANT.STATUS.OK) {
-        AppThrower.throw("Thông tin đăng nhập không đúng");
+        AppThrower.throw(response.meta.message);
       }
 
       // Luôn lưu vào cookie cho phiên hiện tại
@@ -66,7 +64,7 @@ export class AuthService {
    * Đăng xuất khỏi hệ thống
    */
   static async logout(): Promise<void> {
-    const response = await apiHelper.post(apiClient, ENDPOINTS.logout)
+    const response = await apiHelper.post(ENDPOINTS.logout)
 
     if(response == false){
       console.log("Đăng xuất thất bại");
@@ -112,7 +110,6 @@ export class AuthService {
    */
   static async refreshUserInfo(): Promise<UserInfo> {
     const userInfo = await apiHelper.get<UserInfo>(
-        apiClient,
         ENDPOINTS.getUserInfo
       );
       
